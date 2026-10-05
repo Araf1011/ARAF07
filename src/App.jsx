@@ -10,6 +10,7 @@ import Hero from './components/Hero.jsx';
 const About          = lazy(() => import('./components/About.jsx'));
 const Skills         = lazy(() => import('./components/Skills.jsx'));
 const DigitalFootprint = lazy(() => import('./components/DigitalFootprint.jsx'));
+const Education       = lazy(() => import('./components/Education.jsx'));
 const Roadmap        = lazy(() => import('./components/Roadmap.jsx'));
 const Projects       = lazy(() => import('./components/Projects.jsx'));
 const Contact        = lazy(() => import('./components/Contact.jsx'));
@@ -72,6 +73,10 @@ export default function App() {
 
         <Suspense fallback={<SectionSkeleton />}>
           <Roadmap />
+        </Suspense>
+
+        <Suspense fallback={<SectionSkeleton />}>
+          <Education />
         </Suspense>
 
         <Suspense fallback={<SectionSkeleton />}>

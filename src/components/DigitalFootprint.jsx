@@ -190,6 +190,14 @@ export default function DigitalFootprint() {
   const [codeforcesData, setCodeforcesData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const FALLBACK_GH_DATA = { public_repos: 12, followers: 8, following: 15 };
+  const FALLBACK_GH_EVENTS = [
+    { id: 1, type: 'PushEvent', repo: { name: 'Araf1011/Portfolio' }, created_at: new Date().toISOString() },
+    { id: 2, type: 'CreateEvent', repo: { name: 'Araf1011/EventEra' }, created_at: new Date().toISOString() },
+    { id: 3, type: 'PullRequestEvent', repo: { name: 'Araf1011/EventEra' }, created_at: new Date(Date.now() - 86400000).toISOString() },
+    { id: 4, type: 'WatchEvent', repo: { name: 'Araf1011/open-source-lib' }, created_at: new Date(Date.now() - 172800000).toISOString() },
+  ];
+
   useEffect(() => {
     const fetchGitHub = async () => {
       try {
@@ -199,14 +207,20 @@ export default function DigitalFootprint() {
         ]);
         const user = await userRes.json();
         const events = await eventsRes.json();
-        if (user?.login) setGithubData(user);
-        if (Array.isArray(events)) setGithubEvents(events);
+        // If rate-limited or error, API returns { message: '...', ... } instead of user object
+        if (user?.login) {
+          setGithubData(user);
+        } else {
+          setGithubData(FALLBACK_GH_DATA);
+        }
+        if (Array.isArray(events) && events.length > 0) {
+          setGithubEvents(events);
+        } else {
+          setGithubEvents(FALLBACK_GH_EVENTS);
+        }
       } catch {
-        setGithubData({ public_repos: 12, followers: 8, following: 15 });
-        setGithubEvents([
-          { id: 1, type: 'PushEvent', repo: { name: 'Araf1011/Portfolio' }, created_at: new Date().toISOString() },
-          { id: 2, type: 'CreateEvent', repo: { name: 'Araf1011/EventEra' }, created_at: new Date().toISOString() },
-        ]);
+        setGithubData(FALLBACK_GH_DATA);
+        setGithubEvents(FALLBACK_GH_EVENTS);
       }
     };
 
@@ -261,7 +275,6 @@ export default function DigitalFootprint() {
         <div className="fp-tab-nav">
           {[
             { key: 'github', icon: 'fa-brands fa-github', label: 'GitHub' },
-            { key: 'linkedin', icon: 'fa-brands fa-linkedin', label: 'LinkedIn' },
             { key: 'codeforces', icon: 'fa-solid fa-chart-line', label: 'Codeforces' },
           ].map((tab) => (
             <button
@@ -344,8 +357,7 @@ export default function DigitalFootprint() {
           </div>
         )}
 
-        {/* ── LinkedIn Panel ── */}
-        {activeTab === 'linkedin' && <LinkedInPanel />}
+        {/* LinkedIn panel removed */}
 
         {/* ── Codeforces Panel ── */}
         {activeTab === 'codeforces' && (
